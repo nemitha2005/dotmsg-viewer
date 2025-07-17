@@ -7,21 +7,22 @@ const fs = require("fs");
 const app = express();
 const PORT = 3001;
 
-// Simple file upload to uploads folder
 const upload = multer({
   dest: "./uploads/",
   fileFilter: (req, file, cb) => {
-    cb(null, file.originalname.endsWith(".msg"));
+    cb(
+      null,
+      file.originalname.endsWith(".msg") || file.originalname.endsWith(".json")
+    );
   },
 });
 
-// Create uploads folder
+// Creating uploads folder
 if (!fs.existsSync("./uploads")) fs.mkdirSync("./uploads");
 
-// Serve static files
 app.use(express.static("public"));
 
-// Get list of .msg files
+// view list of uploaded files
 app.get("/api/files", (req, res) => {
   const files = fs
     .readdirSync("./uploads")
@@ -58,10 +59,29 @@ app.get("/api/email/:filename", async (req, res) => {
 
 // Upload files
 app.post("/api/upload", upload.array("msgFiles"), (req, res) => {
-  // Rename uploaded files to original names
   req.files.forEach((file) => {
-    const newPath = path.join("./uploads", file.originalname);
-    fs.renameSync(file.path, newPath);
+    if (file.originalname.endsWith(".json")) {
+      // Handle base64 data
+      try {
+        const jsonData = JSON.parse(fs.readFileSync(file.path, "utf8"));
+
+        if (jsonData.FileName && jsonData.FileData) {
+          // base64 -> Binary -> .msg file
+          const msgBuffer = Buffer.from(jsonData.FileData, "base64");
+          const msgPath = path.join("./uploads", jsonData.FileName);
+          fs.writeFileSync(msgPath, msgBuffer);
+        }
+
+        // Remove the base64 file
+        fs.unlinkSync(file.path);
+      } catch (error) {
+        console.error("Error processing JSON:", error);
+      }
+    } else {
+      // Normal .msg file
+      const newPath = path.join("./uploads", file.originalname);
+      fs.renameSync(file.path, newPath);
+    }
   });
 
   res.json({ message: "Files uploaded successfully" });
