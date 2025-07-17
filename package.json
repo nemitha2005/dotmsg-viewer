@@ -1,0 +1,15 @@
+{
+  "name": "msg-file-viewer",
+  "version": "1.0.0",
+  "description": "Simple .msg file viewer",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "multer": "^2.0.0",
+    "eml-parser": "^2.0.4"
+  },
+  "keywords": ["msg", "outlook", "email", "viewer"]
+}

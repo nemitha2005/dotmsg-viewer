@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MSG File Viewer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>MSG File Viewer</h1>
+        </div>
+        
+        <div class="main">
+            <div class="sidebar">
+                <input type="file" id="fileInput" multiple accept=".msg">
+                <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                    Upload .msg Files
+                </button>
+                <div id="fileList">Loading...</div>
+            </div>
+            
+            <div class="content" id="emailViewer">
+                <p>Select a .msg file to view</p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
